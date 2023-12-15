@@ -378,7 +378,7 @@ where
     /// Note:
     ///
     /// * MDBX stores all the freelists in the designated table 0 in each database,
-    ///   and the freelist count is stored at the beginning of the value as `libc::size_t`
+    ///   and the freelist count is stored at the beginning of the value as `libc::uint32_t`
     ///   in the native byte order.
     ///
     /// * It will create a read transaction to traverse the freelist table.
@@ -395,11 +395,7 @@ where
             }
 
             let s = &value[..mem::size_of::<usize>()];
-            if cfg!(target_pointer_width = "64") {
-                freelist += NativeEndian::read_u64(s) as usize;
-            } else {
-                freelist += NativeEndian::read_u32(s) as usize;
-            }
+            freelist += NativeEndian::read_u32(s) as usize;
         }
 
         Ok(freelist)
